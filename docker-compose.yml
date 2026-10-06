@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: nocas-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: nocas
+      POSTGRES_PASSWORD: nocas_pass
+      POSTGRES_DB: nocas
+    ports:
+      - "5432:5432"
+    volumes:
+      - nocas-data:/var/lib/postgresql/data
+
+volumes:
+  nocas-data:
