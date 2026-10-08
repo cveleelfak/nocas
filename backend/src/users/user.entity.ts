@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Role } from './role.enum';
+import { Venue } from '../venues/venue.entity';
 
 @Entity('users')
 export class User {
@@ -20,4 +21,7 @@ export class User {
 
   @CreateDateColumn()
   createdAt!: Date;
+
+  @OneToMany(() => Venue, (venue) => venue.owner)
+  venues!: Venue[];
 }
