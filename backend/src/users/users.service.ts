@@ -30,8 +30,12 @@ export class UsersService implements OnModuleInit {
     await this.create({ email, name: 'Admin', role: Role.ADMIN, passwordHash });
   }
 
-  findByEmail(email: string): Promise<User | null> {
-    return this.usersRepository.findOne({ where: { email } });
+    findByEmail(email: string): Promise<User | null> {
+    return this.usersRepository
+      .createQueryBuilder('user')
+      .addSelect('user.passwordHash')
+      .where('user.email = :email', { email })
+      .getOne();
   }
 
   create(data: NewUser): Promise<User> {
