@@ -6,10 +6,13 @@ import {
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
+  OneToMany,
 } from 'typeorm';
 import { ApprovalStatus } from '../common/approval-status.enum';
 import { Genre } from '../genres/genre.entity';
 import { Venue } from '../venues/venue.entity';
+import { Attendance } from '../attendances/attendance.entity';
+
 
 @Entity('parties')
 export class Party {
@@ -43,6 +46,11 @@ export class Party {
   @ManyToMany(() => Genre, (genre) => genre.parties)
   @JoinTable({ name: 'party_genres' })
   genres!: Genre[];
+
+  @OneToMany(() => Attendance, (attendance) => attendance.party)
+  attendances!: Attendance[];
+
+  attendeeCount?: number;
 
   @CreateDateColumn()
   createdAt!: Date;

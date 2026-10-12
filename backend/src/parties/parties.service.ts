@@ -45,7 +45,7 @@ export class PartiesService {
     return this.partiesRepository.save(party);
   }
 
-  findApproved(date?: string): Promise<Party[]> {
+    async findApproved(date?: string): Promise<Party[]> {
     const query = this.partiesRepository
       .createQueryBuilder('party')
       .leftJoinAndSelect('party.venue', 'venue')
@@ -60,7 +60,8 @@ export class PartiesService {
         nightEnd,
       });
     }
-    return query.getMany();
+    const parties = await query.getMany();
+    return this.attachAttendeeCounts(parties);
   }
 
   findByOwner(ownerId: number): Promise<Party[]> {
@@ -128,6 +129,25 @@ export class PartiesService {
       throw new ForbiddenException('Ova zurka ne pripada tebi');
     }
     return party;
+  }
+
+    private async attachAttendeeCounts(parties: Party[]): Promise<Party[]> {
+    if (parties.length === 0) {
+      return parties;
+    }
+    const rows = await this.partiesRepository
+      .createQueryBuilder('party')
+      .leftJoin('party.attendances', 'attendance')
+      .select('party.id', 'partyId')
+      .addSelect('COUNT(attendance.id)', 'count')
+      .where('party.id IN (:...ids)', { ids: parties.map((party) => party.id) })
+      .groupBy('party.id')
+      .getRawMany<{ partyId: number; count: string }>();
+
+    const countByPartyId = new Map(rows.map((row) => [Number(row.partyId), Number(row.count)]));
+    return parties.map((party) =>
+      Object.assign(party, { attendeeCount: countByPartyId.get(party.id) ?? 0 }),
+    );
   }
 
   private async findGenres(genreIds: number[]): Promise<Genre[]> {

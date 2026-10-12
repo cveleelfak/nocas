@@ -8,6 +8,8 @@ import { AuthModule } from './auth/auth.module';
 import { VenuesModule } from './venues/venues.module';
 import { PartiesModule } from './parties/parties.module';
 import { GenresModule } from './genres/genres.module';
+import { AttendancesModule } from './attendances/attendances.module';
+import { ReviewsModule } from './reviews/reviews.module';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { GenresModule } from './genres/genres.module';
     VenuesModule,
     PartiesModule,
     GenresModule,
+    AttendancesModule,
+    ReviewsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
