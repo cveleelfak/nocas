@@ -1,1 +1,42 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --bg: #0e0d14;
+  --surface: #181622;
+  --surface-raised: #1d1b29;
+  --border: #262335;
+  --border-strong: #34304a;
+  --text: #f3f1fa;
+  --text-soft: #d2cfe0;
+  --text-muted: #b4b0c6;
+  --accent: #c8f53c;
+  --accent-ink: #12111a;
+  --fill-low: #5548c8;
+  --fill-mid: #ff9a4d;
+  --fill-high: #ff6fa3;
+  --font-display: 'Unbounded', sans-serif;
+  --font-body: 'Manrope', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
