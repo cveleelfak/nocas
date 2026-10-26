@@ -1,10 +1,30 @@
 <header class="header">
   <a routerLink="/" class="logo">nocas<span>.</span></a>
+
   <nav class="nav">
     <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Mapa</a>
-    <a routerLink="/my-attendances" routerLinkActive="active">Moji dolasci</a>
-    <a routerLink="/owner" routerLinkActive="active">Moj lokal</a>
-    <a routerLink="/admin" routerLinkActive="active">Admin</a>
+    @switch (user()?.role) {
+      @case ('USER') {
+        <a routerLink="/my-attendances" routerLinkActive="active">Moji dolasci</a>
+      }
+      @case ('OWNER') {
+        <a routerLink="/owner" routerLinkActive="active">Moj lokal</a>
+      }
+      @case ('ADMIN') {
+        <a routerLink="/admin" routerLinkActive="active">Zahtevi</a>
+      }
+    }
   </nav>
-  <a routerLink="/login" class="login">Prijava</a>
+
+  @if (user(); as currentUser) {
+    <div class="account">
+      <div class="account-text">
+        <span class="account-name">{{ currentUser.name }}</span>
+        <span class="account-role">{{ currentUser.role }}</span>
+      </div>
+      <button type="button" class="logout" (click)="logout()">Odjava</button>
+    </div>
+  } @else {
+    <a routerLink="/login" class="login">Prijava</a>
+  }
 </header>
