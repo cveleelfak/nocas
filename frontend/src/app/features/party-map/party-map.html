@@ -1,1 +1,74 @@
-<p>party-map works!</p>
+@let parties = (visibleParties$ | async) ?? [];
+@let selected = selectedParty$ | async;
+
+<section class="filters">
+  <div class="segmented">
+    @for (night of nights; track night.date) {
+      <button type="button" [class.active]="night.date === selectedDate" (click)="selectNight(night.date)">
+        {{ night.label }}
+      </button>
+    }
+  </div>
+
+  <div class="chips">
+    <button type="button" class="chip" [class.active]="(genreFilter$ | async) === null" (click)="selectGenre(null)">
+      Sve
+    </button>
+    @for (genre of genres$ | async; track genre.id) {
+      <button type="button" class="chip" [class.active]="(genreFilter$ | async) === genre.id" (click)="selectGenre(genre.id)">
+        {{ genre.name }}
+      </button>
+    }
+  </div>
+
+  <button type="button" class="chip" [class.active]="freeOnly$ | async" (click)="toggleFreeOnly()">
+    Samo besplatan ulaz
+  </button>
+</section>
+
+<div class="layout">
+  <div class="map-wrap">
+    <div #mapContainer class="map"></div>
+
+    <div class="legend">
+      <strong>Popunjenost</strong>
+      <span><i class="legend-dot fill-low"></i>ima mesta</span>
+      <span><i class="legend-dot fill-mid"></i>puni se</span>
+      <span><i class="legend-dot fill-high"></i>skoro puno</span>
+    </div>
+
+    @if (selected) {
+      <article class="detail">
+        <span class="detail-genres">{{ genresOf(selected) }}</span>
+        <div class="detail-head">
+          <h2>{{ selected.title }}</h2>
+          <span class="price">{{ priceOf(selected) }}</span>
+        </div>
+        <p>{{ selected.venue.name }}, {{ selected.venue.address }}</p>
+        <p>Pocetak u {{ selected.startsAt | date: 'HH:mm' }}</p>
+        @if (selected.performers) {
+          <p>{{ selected.performers }}</p>
+        }
+        <div class="fill-text">
+          <span>Dolazi {{ selected.attendeeCount ?? 0 }} od {{ selected.venue.capacity }}</span>
+          <span>{{ fillPercent(selected) }}%</span>
+        </div>
+        <div class="fill-bar">
+          <div [class]="'fill-bar-value fill-' + fillLevelOf(selected)" [style.width.%]="fillPercent(selected)"></div>
+        </div>
+      </article>
+    }
+  </div>
+
+  <aside class="list">
+    <div class="list-header">
+      <h1>Zurke</h1>
+      <span>{{ (loading$ | async) ? 'Ucitavanje...' : parties.length + ' zurki' }}</span>
+    </div>
+    @for (party of parties; track party.id) {
+      <app-party-card [party]="party" [selected]="party.id === selected?.id" (picked)="pickFromList($event)" />
+    } @empty {
+      <p class="empty">Za ovo vece jos nema odobrenih zurki.</p>
+    }
+  </aside>
+</div>

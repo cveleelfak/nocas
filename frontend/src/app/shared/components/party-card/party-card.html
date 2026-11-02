@@ -1,0 +1,10 @@
+<button type="button" class="card" [class.selected]="selected" (click)="picked.emit(party.id)">
+  <span class="time">{{ party.startsAt | date: 'HH:mm' }}</span>
+  <span class="info">
+    <span class="title">{{ party.title }}</span>
+    <span class="subtitle">{{ subtitle }}</span>
+  </span>
+  <span class="fill">
+    <span class="dot" [class]="'dot dot-' + level"></span>{{ fillPercent }}%
+  </span>
+</button>

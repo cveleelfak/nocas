@@ -11,6 +11,8 @@ import { AuthService } from './core/services/auth.service';
 import { AuthActions } from './store/auth/auth.actions';
 import { authFeature } from './store/auth/auth.reducer';
 import * as authEffects from './store/auth/auth.effects';
+import { partiesFeature } from './store/parties/parties.reducer';
+import * as partiesEffects from './store/parties/parties.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -19,7 +21,8 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([authInterceptor])),
     provideStore(),
     provideState(authFeature),
-    provideEffects(authEffects),
+    provideState(partiesFeature),
+    provideEffects(authEffects, partiesEffects),
     provideStoreDevtools({ maxAge: 25 }),
     provideAppInitializer(() => {
       const session = inject(AuthService).restoreSession();
