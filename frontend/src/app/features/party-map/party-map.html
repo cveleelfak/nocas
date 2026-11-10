@@ -56,6 +56,21 @@
         <div class="fill-bar">
           <div [class]="'fill-bar-value fill-' + fillLevelOf(selected)" [style.width.%]="fillPercent(selected)"></div>
         </div>
+                @switch (user()?.role) {
+          @case ('USER') {
+            <button
+              type="button"
+              class="attend"
+              [class.attending]="isAttending(selected)"
+              (click)="toggleAttendance(selected)"
+            >
+              {{ isAttending(selected) ? 'Dolazis · otkazi' : 'Idem' }}
+            </button>
+          }
+          @case (undefined) {
+            <a routerLink="/login" class="attend">Prijavi se da oznacis dolazak</a>
+          }
+        }
       </article>
     }
   </div>

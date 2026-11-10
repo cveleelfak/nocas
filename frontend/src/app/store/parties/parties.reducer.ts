@@ -2,6 +2,7 @@ import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createFeature, createReducer, createSelector, on } from '@ngrx/store';
 import { Party } from '../../core/models/party.model';
 import { PartiesActions } from './parties.actions';
+import { AttendancesActions } from '../attendances/attendances.actions';
 
 export interface PartiesState extends EntityState<Party> {
   selectedPartyId: number | null;
@@ -43,6 +44,21 @@ export const partiesFeature = createFeature({
       ...state,
       selectedPartyId: partyId,
     })),
+        on(AttendancesActions.attendSuccess, (state, { partyId }) =>
+      partiesAdapter.mapOne(
+        { id: partyId, map: (party) => ({ ...party, attendeeCount: (party.attendeeCount ?? 0) + 1 }) },
+        state,
+      ),
+    ),
+    on(AttendancesActions.cancelSuccess, (state, { partyId }) =>
+      partiesAdapter.mapOne(
+        {
+          id: partyId,
+          map: (party) => ({ ...party, attendeeCount: Math.max((party.attendeeCount ?? 0) - 1, 0) }),
+        },
+        state,
+      ),
+    ),
   ),
   extraSelectors: ({ selectPartiesState, selectEntities, selectSelectedPartyId }) => ({
     selectAllParties: createSelector(selectPartiesState, selectAll),

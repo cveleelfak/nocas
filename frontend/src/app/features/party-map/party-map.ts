@@ -10,6 +10,10 @@ import { fillLevel, fillRatio, genreNames, priceLabel } from '../../core/utils/p
 import { PartyCard } from '../../shared/components/party-card/party-card';
 import { PartiesActions } from '../../store/parties/parties.actions';
 import { partiesFeature } from '../../store/parties/parties.reducer';
+import { RouterLink } from '@angular/router';
+import { AttendancesActions } from '../../store/attendances/attendances.actions';
+import { attendancesFeature } from '../../store/attendances/attendances.reducer';
+import { authFeature } from '../../store/auth/auth.reducer';
 
 const CITY_CENTER: L.LatLngExpression = [43.3209, 21.8958];
 const TILES_URL = 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png';
@@ -22,7 +26,7 @@ const MARKER_GROWTH = 30;
 
 @Component({
   selector: 'app-party-map',
-  imports: [AsyncPipe, DatePipe, PartyCard],
+  imports: [AsyncPipe, DatePipe, PartyCard, RouterLink],
   templateUrl: './party-map.html',
   styleUrl: './party-map.scss',
 })
@@ -45,6 +49,11 @@ export class PartyMap implements AfterViewInit, OnDestroy {
   protected readonly genres$ = inject(GenreService).getAll();
   protected readonly loading$ = this.store.select(partiesFeature.selectLoading);
   protected readonly selectedParty$ = this.store.select(partiesFeature.selectSelectedParty);
+
+  protected readonly user = this.store.selectSignal(authFeature.selectUser);
+  private readonly attendingPartyIds = this.store.selectSignal(
+    attendancesFeature.selectAttendingPartyIds,
+  );
 
   protected readonly visibleParties$ = combineLatest([
     this.store.select(partiesFeature.selectAllParties),
@@ -91,6 +100,17 @@ export class PartyMap implements AfterViewInit, OnDestroy {
 
   protected pickFromList(partyId: number): void {
     this.listClick$.next(partyId);
+  }
+
+    protected isAttending(party: Party): boolean {
+    return this.attendingPartyIds().includes(party.id);
+  }
+
+  protected toggleAttendance(party: Party): void {
+    const action = this.isAttending(party)
+      ? AttendancesActions.cancel({ partyId: party.id })
+      : AttendancesActions.attend({ partyId: party.id });
+    this.store.dispatch(action);
   }
 
   protected fillPercent(party: Party): number {

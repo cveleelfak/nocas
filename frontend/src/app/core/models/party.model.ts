@@ -29,3 +29,9 @@ export interface Party {
   genres: Genre[];
   attendeeCount?: number;
 }
+
+export interface Attendance {
+  id: number;
+  createdAt: string;
+  party: Party;
+}

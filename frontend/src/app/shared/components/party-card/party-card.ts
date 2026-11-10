@@ -13,6 +13,7 @@ export class PartyCard {
   @Input({ required: true }) party!: Party;
   @Input() selected = false;
   @Output() picked = new EventEmitter<number>();
+  @Input() showFill = true;
 
   protected get fillPercent(): number {
     return Math.round(fillRatio(this.party) * 100);

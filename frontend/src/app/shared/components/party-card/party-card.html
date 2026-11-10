@@ -4,7 +4,9 @@
     <span class="title">{{ party.title }}</span>
     <span class="subtitle">{{ subtitle }}</span>
   </span>
+   @if (showFill) {
   <span class="fill">
     <span class="dot" [class]="'dot dot-' + level"></span>{{ fillPercent }}%
   </span>
+  }
 </button>

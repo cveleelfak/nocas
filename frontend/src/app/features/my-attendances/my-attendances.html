@@ -1,1 +1,40 @@
-<p>my-attendances works!</p>
+@let stats = stats$ | async;
+
+<section class="stats">
+  <div class="stat">
+    <span class="stat-label">Ukupno dolazaka</span>
+    <span class="stat-value">{{ stats?.total ?? 0 }}</span>
+  </div>
+  <div class="stat">
+    <span class="stat-label">Razlicitih lokala</span>
+    <span class="stat-value">{{ stats?.venues ?? 0 }}</span>
+  </div>
+  <div class="stat">
+    <span class="stat-label">Potroseno na ulaz</span>
+    <span class="stat-value">{{ stats?.spent ?? 0 }} <small>RSD</small></span>
+  </div>
+</section>
+
+<section class="group">
+  <h1>Predstojece</h1>
+  @if (loading$ | async) {
+    <p class="empty">Ucitavanje...</p>
+  }
+  @for (party of upcoming$ | async; track party.id) {
+    <div class="row">
+      <app-party-card class="row-card" [party]="party" [showFill]="false" />
+      <button type="button" class="cancel" (click)="cancel(party.id)">Otkazi</button>
+    </div>
+  } @empty {
+    <p class="empty">Nisi oznacio nijednu predstojecu zurku. Pogledaj mapu i klikni "Idem".</p>
+  }
+</section>
+
+<section class="group">
+  <h2>Bio si</h2>
+  @for (party of past$ | async; track party.id) {
+    <app-party-card [party]="party" [showFill]="false" />
+  } @empty {
+    <p class="empty">Jos nema zurki iza tebe.</p>
+  }
+</section>

@@ -176,3 +176,24 @@
 .empty {
   color: var(--text-muted);
 }
+
+.attend {
+  margin-top: 8px;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 700;
+  font-size: 15px;
+  text-decoration: none;
+  cursor: pointer;
+
+  &.attending {
+    background: transparent;
+    color: var(--accent);
+  }
+}
