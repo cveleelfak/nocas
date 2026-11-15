@@ -64,12 +64,13 @@ export class PartiesService {
     return this.attachAttendeeCounts(parties);
   }
 
-  findByOwner(ownerId: number): Promise<Party[]> {
-    return this.partiesRepository.find({
+   async findByOwner(ownerId: number): Promise<Party[]> {
+    const parties = await this.partiesRepository.find({
       where: { venue: { owner: { id: ownerId } } },
       relations: { venue: true, genres: true },
       order: { startsAt: 'DESC' },
     });
+    return this.attachAttendeeCounts(parties);
   }
 
   findPending(): Promise<Party[]> {

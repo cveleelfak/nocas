@@ -15,6 +15,8 @@ import { partiesFeature } from './store/parties/parties.reducer';
 import * as partiesEffects from './store/parties/parties.effects';
 import { attendancesFeature } from './store/attendances/attendances.reducer';
 import * as attendancesEffects from './store/attendances/attendances.effects';
+import { ownerFeature } from './store/owner/owner.reducer';
+import * as ownerEffects from './store/owner/owner.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -25,7 +27,8 @@ export const appConfig: ApplicationConfig = {
     provideState(authFeature),
     provideState(partiesFeature),
     provideState(attendancesFeature),
-    provideEffects(authEffects, partiesEffects, attendancesEffects),
+    provideState(ownerFeature),
+    provideEffects(authEffects, partiesEffects, attendancesEffects, ownerEffects),
     provideStoreDevtools({ maxAge: 25 }),
     provideAppInitializer(() => {
       const session = inject(AuthService).restoreSession();

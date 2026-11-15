@@ -1,0 +1,31 @@
+<form class="stack" [formGroup]="form" (ngSubmit)="submit()">
+  <div class="field">
+    <label for="venue-name">Naziv lokala</label>
+    <input id="venue-name" type="text" formControlName="name" />
+    @if (form.controls.name.touched && form.controls.name.invalid) {
+      <span class="hint">Unesi naziv</span>
+    }
+  </div>
+
+  <div class="field">
+    <label for="venue-address">Adresa</label>
+    <input id="venue-address" type="text" formControlName="address" placeholder="Kopitareva 7, Nis" />
+    @if (form.controls.address.touched && form.controls.address.invalid) {
+      <span class="hint">Unesi ulicu, broj i grad</span>
+    }
+  </div>
+
+  <div class="field">
+    <label for="venue-capacity">Kapacitet</label>
+    <input id="venue-capacity" type="number" min="1" formControlName="capacity" />
+  </div>
+
+  <div class="field">
+    <label for="venue-description">Opis</label>
+    <textarea id="venue-description" formControlName="description"></textarea>
+  </div>
+
+  <button class="btn-primary" type="submit" [disabled]="saving">
+    {{ saving ? 'Trazim adresu...' : 'Prijavi lokal' }}
+  </button>
+</form>

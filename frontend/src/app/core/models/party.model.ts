@@ -35,3 +35,20 @@ export interface Attendance {
   createdAt: string;
   party: Party;
 }
+
+export interface VenueRequest {
+  name: string;
+  address: string;
+  capacity: number;
+  description: string;
+}
+
+export interface PartyRequest {
+  title: string;
+  description: string;
+  startsAt: string;
+  price: number;
+  performers: string;
+  venueId: number;
+  genreIds: number[];
+}

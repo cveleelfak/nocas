@@ -1,0 +1,66 @@
+<form class="stack" [formGroup]="form" (ngSubmit)="submit()">
+  <div class="field">
+    <label for="party-title">Naziv</label>
+    <input id="party-title" type="text" formControlName="title" />
+    @if (form.controls.title.touched && form.controls.title.invalid) {
+      <span class="hint">Unesi naziv zurke</span>
+    }
+  </div>
+
+  <div class="field">
+    <label for="party-venue">Lokal</label>
+    <select id="party-venue" formControlName="venueId">
+      @for (venue of venues; track venue.id) {
+        <option [ngValue]="venue.id">{{ venue.name }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="two-columns">
+    <div class="field">
+      <label for="party-start">Pocetak</label>
+      <input id="party-start" type="datetime-local" formControlName="startsAt" />
+      @if (form.controls.startsAt.touched && form.controls.startsAt.invalid) {
+        <span class="hint">Izaberi datum i vreme</span>
+      }
+    </div>
+    <div class="field">
+      <label for="party-price">Cena ulaza (RSD)</label>
+      <input id="party-price" type="number" min="0" formControlName="price" />
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="party-performers">Izvodjaci</label>
+    <input id="party-performers" type="text" formControlName="performers" placeholder="DJ Vuk, Mila K" />
+  </div>
+
+  <fieldset class="genre-picker">
+    <legend>Zanrovi</legend>
+    <div class="chips">
+      @for (genre of genres; track genre.id) {
+        <button type="button" class="chip" [class.active]="isGenreSelected(genre.id)" (click)="toggleGenre(genre.id)">
+          {{ genre.name }}
+        </button>
+      }
+    </div>
+    @if (form.controls.genreIds.touched && form.controls.genreIds.invalid) {
+      <span class="hint">Izaberi bar jedan zanr</span>
+    }
+  </fieldset>
+
+  <div class="field">
+    <label for="party-description">Opis</label>
+    <textarea id="party-description" formControlName="description"></textarea>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn-primary" type="submit" [disabled]="saving">
+      {{ editing ? 'Sacuvaj i posalji ponovo' : 'Posalji na odobrenje' }}
+    </button>
+    @if (editing) {
+      <button type="button" class="btn-ghost" (click)="cancelled.emit()">Odustani</button>
+    }
+  </div>
+  <p class="muted">Zurka se pojavljuje na mapi tek kad je admin odobri. Svaka izmena je ponovo salje na odobrenje.</p>
+</form>

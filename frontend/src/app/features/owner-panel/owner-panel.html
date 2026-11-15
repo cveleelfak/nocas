@@ -1,1 +1,112 @@
-<p>owner-panel works!</p>
+@let stats = stats$ | async;
+@let venues = (venues$ | async) ?? [];
+@let approvedVenues = (approvedVenues$ | async) ?? [];
+@let genres = (genres$ | async) ?? [];
+@let activeStatus = statusFilter$ | async;
+
+<section class="stats">
+  <div class="stat">
+    <span class="stat-label">Zurki ukupno</span>
+    <span class="stat-value">{{ stats?.total ?? 0 }}</span>
+  </div>
+  <div class="stat">
+    <span class="stat-label">Na cekanju</span>
+    <span class="stat-value">{{ stats?.pending ?? 0 }}</span>
+  </div>
+  <div class="stat">
+    <span class="stat-label">Ukupno dolazaka</span>
+    <span class="stat-value">{{ stats?.attendees ?? 0 }}</span>
+  </div>
+  <div class="stat">
+    <span class="stat-label">Prosecna popunjenost</span>
+    <span class="stat-value">{{ stats?.averageFill ?? 0 }}%</span>
+  </div>
+</section>
+
+@if (error()) {
+  <div class="form-error page-error">{{ error() }}</div>
+}
+
+<div class="layout">
+  <div class="side">
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Moji lokali</h2>
+        @if (venues.length > 0) {
+          <button type="button" class="btn-ghost" (click)="toggleVenueForm()">
+            {{ showVenueForm() ? 'Zatvori' : '+ Novi lokal' }}
+          </button>
+        }
+      </div>
+      @for (venue of venues; track venue.id) {
+        <div class="venue-row">
+          <div class="venue-info">
+            <strong>{{ venue.name }}</strong>
+            <span>{{ venue.address }} · {{ venue.capacity }} mesta</span>
+          </div>
+          <span [class]="'badge badge-' + venue.status">{{ venueStatus(venue.status) }}</span>
+        </div>
+      } @empty {
+        <p class="muted">Jos nemas lokal. Prijavi ga, a admin ce ga pregledati.</p>
+      }
+      @if (showVenueForm() || venues.length === 0) {
+        <app-venue-form [saving]="saving()" (submitted)="saveVenue($event)" />
+      }
+    </section>
+
+    <section class="panel">
+      <h2>{{ editingParty() ? 'Izmena zurke' : 'Nova zurka' }}</h2>
+      @if (approvedVenues.length === 0) {
+        <p class="muted">Zurku mozes da objavis kad admin odobri bar jedan tvoj lokal.</p>
+      } @else {
+        <app-party-form
+          [venues]="approvedVenues"
+          [genres]="genres"
+          [editing]="editingParty()"
+          [saving]="saving()"
+          (submitted)="saveParty($event)"
+          (cancelled)="cancelEdit()"
+        />
+      }
+    </section>
+  </div>
+
+  <section class="parties">
+    <div class="panel-head">
+      <h2>Moje zurke</h2>
+      <div class="segmented">
+        @for (option of statusFilters; track option.value) {
+          <button type="button" [class.active]="activeStatus === option.value" (click)="selectStatus(option.value)">
+            {{ option.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    @for (party of visibleParties$ | async; track party.id) {
+      <article class="party-row">
+        <div class="party-main">
+          <div class="party-info">
+            <strong>{{ party.title }}</strong>
+            <span>{{ party.startsAt | date: 'dd.MM. HH:mm' }} · {{ party.venue.name }} · {{ priceOf(party) }}</span>
+          </div>
+          @if (party.status === 'APPROVED') {
+            <span class="muted">{{ party.attendeeCount ?? 0 }} / {{ party.venue.capacity }} dolazi</span>
+          }
+          <span [class]="'badge badge-' + party.status">{{ partyStatus(party) }}</span>
+          <div class="row-actions">
+            <button type="button" class="btn-ghost" (click)="edit(party)">
+              {{ party.status === 'REJECTED' ? 'Ispravi' : 'Izmeni' }}
+            </button>
+            <button type="button" class="btn-ghost danger" (click)="remove(party.id)">Obrisi</button>
+          </div>
+        </div>
+        @if (party.status === 'REJECTED' && party.rejectionReason) {
+          <p class="reason"><strong>Razlog admina:</strong> {{ party.rejectionReason }}</p>
+        }
+      </article>
+    } @empty {
+      <p class="muted">Nema zurki za ovaj filter.</p>
+    }
+  </section>
+</div>
