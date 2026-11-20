@@ -1,1 +1,76 @@
-<p>admin-panel works!</p>
+@let parties = (partyQueue$ | async) ?? [];
+@let venues = (venueQueue$ | async) ?? [];
+@let genres = (genres$ | async) ?? [];
+
+@if (error()) {
+  <div class="form-error page-error">{{ error() }}</div>
+}
+
+<div class="layout">
+  <section class="queue">
+    <div class="queue-head">
+      <h1>Zurke na cekanju</h1>
+      <span class="count">{{ parties.length }}</span>
+    </div>
+    @if (loading()) {
+      <p class="muted">Ucitavanje...</p>
+    }
+    @for (party of parties; track party.id) {
+      <app-review-card [party]="party" (approved)="approveParty($event)" (rejected)="rejectParty($event)" />
+    } @empty {
+      <p class="muted">Nema zurki koje cekaju odobrenje.</p>
+    }
+  </section>
+
+  <aside class="side">
+    <section class="panel">
+      <h2>Novi lokali</h2>
+      @for (venue of venues; track venue.id) {
+        <div class="venue-row">
+          <div class="venue-info">
+            <strong>{{ venue.name }}</strong>
+            <span>{{ venue.address }} · kapacitet {{ venue.capacity }}</span>
+            @if (venue.owner) {
+              <span>Vlasnik: {{ venue.owner.name }}</span>
+            }
+          </div>
+          <div class="venue-actions">
+            <button type="button" class="btn-primary small" (click)="reviewVenue(venue.id, 'APPROVED')">Odobri</button>
+            <button type="button" class="btn-ghost" (click)="reviewVenue(venue.id, 'REJECTED')">Odbij</button>
+          </div>
+        </div>
+      } @empty {
+        <p class="muted">Nema novih lokala.</p>
+      }
+    </section>
+
+    <section class="panel">
+      <h2>Pregled</h2>
+      <div class="overview-row"><span>Zurki na cekanju</span><strong>{{ parties.length }}</strong></div>
+      <div class="overview-row"><span>Lokala na cekanju</span><strong>{{ venues.length }}</strong></div>
+      <div class="overview-row"><span>Aktivnih lokala</span><strong>{{ activeVenueCount() }}</strong></div>
+      <div class="overview-row"><span>Zanrova</span><strong>{{ genres.length }}</strong></div>
+    </section>
+
+    <section class="panel">
+      <h2>Zanrovi</h2>
+        <form class="genre-form" [formGroup]="genreForm" (ngSubmit)="addGenre()">
+        <label class="visually-hidden" for="genre-name">Naziv zanra</label>
+        <input id="genre-name" type="text" placeholder="npr. Drum and bass" formControlName="name" />
+        <button type="submit" class="btn-primary small">Dodaj</button>
+      </form>
+      <ul class="genre-list">
+        @for (genre of genres; track genre.id) {
+          <li>
+            <span>{{ genre.name }}</span>
+            <button type="button" class="icon-button" [attr.aria-label]="'Obrisi zanr ' + genre.name" (click)="removeGenre(genre.id)">
+              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            </button>
+          </li>
+        }
+      </ul>
+    </section>
+  </aside>
+</div>

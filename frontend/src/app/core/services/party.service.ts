@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Party, PartyRequest } from '../models/party.model';
+import { Party, PartyRequest, ReviewDecision } from '../models/party.model';
 
 @Injectable({ providedIn: 'root' })
 export class PartyService {
@@ -27,5 +27,13 @@ export class PartyService {
 
   remove(partyId: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${partyId}`);
+  }
+
+    getPending(): Observable<Party[]> {
+    return this.http.get<Party[]>(`${this.baseUrl}/pending`);
+  }
+
+  review(partyId: number, decision: ReviewDecision): Observable<Party> {
+    return this.http.patch<Party>(`${this.baseUrl}/${partyId}/review`, decision);
   }
 }

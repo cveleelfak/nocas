@@ -300,3 +300,18 @@ textarea {
   color: var(--text-muted);
   font-size: 13px;
 }
+
+.btn-primary.small {
+  min-height: 44px;
+  padding: 0 14px;
+  font-size: 14px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

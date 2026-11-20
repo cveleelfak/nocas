@@ -12,4 +12,12 @@ export class GenreService {
   getAll(): Observable<Genre[]> {
     return this.http.get<Genre[]>(this.baseUrl);
   }
+
+  create(name: string): Observable<Genre> {
+    return this.http.post<Genre>(this.baseUrl, { name });
+  }
+
+  remove(genreId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${genreId}`);
+  }
 }

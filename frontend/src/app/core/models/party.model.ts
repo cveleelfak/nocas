@@ -14,6 +14,7 @@ export interface Venue {
   capacity: number;
   description: string;
   status: ApprovalStatus;
+  owner?: { id: number; name: string; email: string };
 }
 
 export interface Party {
@@ -28,6 +29,7 @@ export interface Party {
   venue: Venue;
   genres: Genre[];
   attendeeCount?: number;
+  createdAt?: string;
 }
 
 export interface Attendance {
@@ -51,4 +53,9 @@ export interface PartyRequest {
   performers: string;
   venueId: number;
   genreIds: number[];
+}
+
+export interface ReviewDecision {
+  status: 'APPROVED' | 'REJECTED';
+  rejectionReason?: string;
 }

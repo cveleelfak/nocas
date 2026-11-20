@@ -1,0 +1,53 @@
+<article class="review">
+  <div class="review-head">
+    <div>
+      <span class="genres">{{ genres }}</span>
+      <h3>{{ party.title }}</h3>
+    </div>
+    @if (party.createdAt) {
+      <span class="muted">Poslato {{ party.createdAt | date: 'dd.MM. HH:mm' }}</span>
+    }
+  </div>
+
+  <dl class="facts">
+    <div>
+      <dt>Lokal</dt>
+      <dd>{{ party.venue.name }}</dd>
+    </div>
+    <div>
+      <dt>Termin</dt>
+      <dd>{{ party.startsAt | date: 'dd.MM. HH:mm' }}</dd>
+    </div>
+    <div>
+      <dt>Ulaz</dt>
+      <dd>{{ price }}</dd>
+    </div>
+    <div>
+      <dt>Izvodjaci</dt>
+      <dd>{{ party.performers || '-' }}</dd>
+    </div>
+  </dl>
+
+  @if (party.description) {
+    <p class="description">{{ party.description }}</p>
+  }
+
+  @if (rejecting()) {
+    <div class="field">
+      <label [for]="'reason-' + party.id">Razlog odbijanja (vlasnik ce ga videti)</label>
+      <textarea [id]="'reason-' + party.id" [formControl]="reason"></textarea>
+      @if (reason.touched && reason.invalid) {
+        <span class="hint">Napisi razlog, bar 5 karaktera</span>
+      }
+    </div>
+    <div class="actions">
+      <button type="button" class="btn-ghost danger" (click)="confirmReject()">Potvrdi odbijanje</button>
+      <button type="button" class="btn-ghost" (click)="cancelRejecting()">Odustani</button>
+    </div>
+  } @else {
+    <div class="actions">
+      <button type="button" class="btn-primary approve" (click)="approved.emit(party.id)">Odobri</button>
+      <button type="button" class="btn-ghost danger" (click)="startRejecting()">Odbij uz razlog</button>
+    </div>
+  }
+</article>

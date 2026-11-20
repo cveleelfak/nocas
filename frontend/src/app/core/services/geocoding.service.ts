@@ -11,12 +11,29 @@ interface NominatimResult {
 }
 
 const NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
+const HOUSE_NUMBER = /\s+\d+[a-zA-Z]?(?=\s*,|\s*$)/;
 
 @Injectable({ providedIn: 'root' })
 export class GeocodingService {
   async findCoordinates(address: string): Promise<Coordinates | null> {
+    for (const query of this.queryVariants(address)) {
+      const coordinates = await this.search(query);
+      if (coordinates) {
+        return coordinates;
+      }
+    }
+    return null;
+  }
+
+  private queryVariants(address: string): string[] {
+    const trimmed = address.trim();
+    const withoutHouseNumber = trimmed.replace(HOUSE_NUMBER, '');
+    return [...new Set([trimmed, withoutHouseNumber])];
+  }
+
+  private async search(query: string): Promise<Coordinates | null> {
     const params = new URLSearchParams({
-      q: address,
+      q: query,
       format: 'json',
       limit: '1',
       countrycodes: 'rs',
